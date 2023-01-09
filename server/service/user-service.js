@@ -7,6 +7,7 @@ const UserDto = require("../dtos/user-dto");
 
 class UserService {
   async register(email, password) {
+    console.log("x");
     const candidate = await UserModel.findOne({ email });
 
     if (candidate) {
@@ -16,7 +17,10 @@ class UserService {
     const activationLink = uuid.v4();
     const preparedPass = await bcrypt.hash(password, 3);
     const user = await UserModel.create({ email, password: preparedPass });
-    await mailService.sendActivationMail(email, activationLink);
+
+    const activationUri = `${process.env.API_URL}/api/activate/${activationLink}`;
+    //await mailService.sendActivationMail(email, activationUri);
+    console.log(activationUri);
 
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
@@ -26,6 +30,17 @@ class UserService {
       ...tokens,
       user: userDto,
     };
+  }
+
+  async activate(activationLink) {
+    const user = await UserModel.findOne({ activationLink });
+
+    if (!user) {
+      throw new Error("Invalid activation link");
+    }
+
+    user.isActivated = true;
+    await user.save();
   }
 }
 
