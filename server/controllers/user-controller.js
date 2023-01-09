@@ -13,17 +13,23 @@ class UserController {
         httpOnly: true,
       });
       res.json(userData);
-    } catch (e) {}
+    } catch (e) {
+      next(e);
+    }
   }
 
   async login(req, res, next) {
     try {
-    } catch (e) {}
+    } catch (e) {
+      next(e);
+    }
   }
 
   async logout(req, res, next) {
     try {
-    } catch (e) {}
+    } catch (e) {
+      next(e);
+    }
   }
 
   async activate(req, res, next) {
@@ -33,18 +39,24 @@ class UserController {
       await userService.activate(activationLink);
 
       return res.redirect(process.env.CLIENT_URL);
-    } catch (e) {}
+    } catch (e) {
+      next(e);
+    }
   }
 
   async refresh(req, res, next) {
     try {
-    } catch (e) {}
+    } catch (e) {
+      next(e);
+    }
   }
 
   async getUsers(req, res, next) {
     try {
       res.json("hello");
-    } catch (e) {}
+    } catch (e) {
+      next(e);
+    }
   }
 }
 
