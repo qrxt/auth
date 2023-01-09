@@ -10,7 +10,6 @@ const userModel = require("../models/user-model");
 
 class UserService {
   async register(email, password) {
-    console.log("x");
     const candidate = await UserModel.findOne({ email });
 
     if (candidate) {
