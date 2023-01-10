@@ -9,12 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.4.6",
     "@types/axios": "^0.14.0",
     "axios": "^0.27.2",
+    "framer-motion": "^8.4.0",
+    "lodash": "^4.17.21",
     "mobx": "^6.7.0",
     "mobx-react-lite": "^3.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.7.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
