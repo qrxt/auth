@@ -1,6 +1,7 @@
-import { Button, Flex, Input, Stack } from "@chakra-ui/react";
 import React, { FC, useContext, useState } from "react";
+import { Button, Flex, Input, Stack } from "@chakra-ui/react";
 import { StateContext } from "../../App";
+import { observer } from "mobx-react-lite";
 
 const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -59,4 +60,4 @@ const LoginForm: FC = () => {
   );
 };
 
-export default LoginForm;
+export default observer(LoginForm);

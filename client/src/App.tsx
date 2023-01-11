@@ -1,7 +1,21 @@
-import React, { createContext } from "react";
-import { Box, ChakraProvider, Container } from "@chakra-ui/react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  ChakraProvider,
+  Heading,
+  List,
+  ListItem,
+  Spinner,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import LoginForm from "./components/LoginForm";
 import Store from "./store/store";
+import Layout from "./components/Layout";
+import { observer } from "mobx-react-lite";
+import { UserDTO } from "./types/user";
+import { UserService } from "./services";
 
 const store = new Store();
 
@@ -12,31 +26,70 @@ interface State {
 export const StateContext = createContext<State>({ store });
 
 function App() {
+  const { store } = useContext(StateContext);
+  const [users, setUsers] = useState<UserDTO[]>();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      store.checkAuth();
+    }
+  }, [store]);
+
+  async function getUsers() {
+    try {
+      const response = await UserService.fetchUsers();
+      setUsers(response.data);
+    } catch (e) {
+      console.error("Failed to fetch users", e);
+    }
+  }
+
   return (
     <StateContext.Provider value={{ store }}>
       <ChakraProvider>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          minW={320}
-        >
-          <Container minW="xl" py={[3, 3, 3, 3]}>
-            <Box
-              border="1px"
-              borderColor="blackAlpha.300"
-              borderRadius="xl"
-              boxShadow="md"
-              p={3}
-            >
-              <LoginForm />
+        <Layout>
+          <Heading as="h2" variant="h1" mb={3}>
+            Auth / Register
+          </Heading>
+
+          {store.isLoading ? (
+            <Spinner />
+          ) : (
+            <Box>
+              <Text mb={3}>
+                {store.isAuth ? "Authorized" : "Not authorized"}
+              </Text>
+
+              {!store.isAuth && <LoginForm />}
             </Box>
-          </Container>
-        </Box>
+          )}
+
+          {store.isAuth && (
+            <Stack>
+              <Heading variant="h3">Users</Heading>
+
+              <Button
+                onClick={() => {
+                  getUsers();
+                }}
+              >
+                Get users
+              </Button>
+
+              <List>
+                {users &&
+                  users.map((user) => (
+                    <ListItem key={user.email}>
+                      <Text>{user.email}</Text>
+                    </ListItem>
+                  ))}
+              </List>
+            </Stack>
+          )}
+        </Layout>
       </ChakraProvider>
     </StateContext.Provider>
   );
 }
 
-export default App;
+export default observer(App);

@@ -1,4 +1,4 @@
-import usersApi from "../lib/axios";
+import api from "../lib/axios";
 import { AxiosResponse } from "axios";
 import { AuthResponse } from "../types/auth";
 import { UserDTO } from "../types/user";
@@ -7,6 +7,6 @@ type UserPromise = Promise<AxiosResponse<UserDTO[]>>;
 
 export default class AuthService {
   static async fetchUsers(): UserPromise {
-    return usersApi.get<UserDTO[]>("/login");
+    return api.get<UserDTO[]>("/users");
   }
 }

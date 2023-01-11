@@ -1,12 +1,14 @@
 import axios from "axios";
+import identity from "lodash/identity";
+import { AuthResponse } from "../types/auth";
 
-const BASE_URL = "http://localhost:5000";
-const usersApi = axios.create({
+export const BASE_URL = "http://localhost:5000/api";
+const api = axios.create({
   withCredentials: true,
   baseURL: BASE_URL,
 });
 
-usersApi.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
   if (config.headers) {
     config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
   }
@@ -14,4 +16,19 @@ usersApi.interceptors.request.use((config) => {
   return config;
 });
 
-export default usersApi;
+api.interceptors.response.use(identity, async (e) => {
+  const originalRequest = e.config;
+  if (e.response.status === 401) {
+    try {
+      const response = await axios.get<AuthResponse>(`${BASE_URL}/refresh`, {
+        withCredentials: true,
+      });
+      localStorage.setItem("token", response.data.accessToken);
+      return api.request(originalRequest);
+    } catch (e) {
+      console.error("Failed to refresh on 401", e);
+    }
+  }
+});
+
+export default api;
